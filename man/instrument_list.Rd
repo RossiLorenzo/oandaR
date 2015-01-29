@@ -4,7 +4,7 @@
 \alias{instrument_list}
 \title{Get an instrument list}
 \usage{
-instrument_list(token, accountId, accountType = c("Practice", "Trade"),
+instrument_list(token, accountId, accountType = c("Trade", "Practice"),
   fields = NULL, instruments = NULL)
 }
 \arguments{

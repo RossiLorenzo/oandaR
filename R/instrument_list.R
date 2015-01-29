@@ -29,7 +29,7 @@
 #' @export
 #' 
 
-instrument_list <- function(token, accountId, accountType = c("Practice", "Trade"), fields = NULL, instruments = NULL){
+instrument_list <- function(token, accountId, accountType = c("Trade", "Practice"), fields = NULL, instruments = NULL){
   library("httr")
   # Check arguments
   accountType <- match.arg(accountType)
@@ -55,5 +55,5 @@ instrument_list <- function(token, accountId, accountType = c("Practice", "Trade
   results_df <- data.frame(matrix(unlist(results), ncol = length(results[[1]]), byrow = TRUE), 
                            stringsAsFactors = FALSE)
   colnames(results_df) <- names(results[[1]])
-  return(results)
+  return(results_df)
 }
