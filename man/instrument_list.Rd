@@ -4,19 +4,19 @@
 \alias{instrument_list}
 \title{Get an instrument list}
 \usage{
-instrument_list(token, accountId, accountType = c("Trade", "Practice"),
-  fields = NULL, instruments = NULL)
+instrument_list(token, accountId, fields = NULL, instruments = NULL,
+  accountType = c("Trade", "Practice"))
 }
 \arguments{
 \item{token}{The personal access token. There is a link on your OANDA fxTrade account profile page titled 'Manage API Access' (My Account -> My Services -> Manage API Access). From there, you can generate a personal access token to use with the OANDA API, as well as revoke a token you may currently have.}
 
 \item{accountId}{The account id to fetch the list of tradeable instruments for.}
 
-\item{accountType}{The subdomain for the request is dependent on the environment you wish to obtain access tokens for. Possible choices are Practice or Trade}
-
 \item{fields}{A vector of instrument fields that are to be returned in the response. Please see the Value section below for a list of valid values. If the fields option is not specified, all fields will be returned}
 
 \item{instruments}{A vector of instruments that are to be returned in the response. If the instruments option is not specified, all instruments will be returned}
+
+\item{accountType}{The subdomain for the request is dependent on the environment you wish to obtain access tokens for. Possible choices are Practice or Trade}
 }
 \value{
 A data frame with all or some of the following fields:\cr
