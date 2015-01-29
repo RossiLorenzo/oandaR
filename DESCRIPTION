@@ -1,0 +1,9 @@
+Package: oandaR
+Title: Connection to oanda.com API service
+Description: Package that makes easy the connection and use of the API service offered by the webiste oanda.com
+Version: 1.0
+Author: Lorenzo Rossi
+Maintainer: Lorenzo Rossi <lorereds@gmail.com>
+Depends:
+    R (>= 2.41)
+LazyData: true
