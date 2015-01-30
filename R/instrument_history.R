@@ -107,6 +107,5 @@ instrument_history <- function(token, instrument,
     results_df[,i] = as.numeric(results_df[,i])
   results_df$complete = as.logical(results_df$complete)
   
-  results = new("oanda_result", url = url, type = "historical", result = results_df)
-  return(results)
+  return(results_df)
 }

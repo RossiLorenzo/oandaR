@@ -1,19 +1,27 @@
 #' @export
 setClass("oanda_result", representation(type = "character", url = "character", result = "data.frame"))
 
-
 #' @export
 setGeneric("plot")
 setMethod("plot", "oanda_result", function(x, type = c("Ask", "Bid")) {
-  library(ggplot2)
   
+  library(ggplot2)
   df = x@result
-  df$next_time = c(df$time[-1], df$time[nrow(df)] + mean(diff(df$time)))
-  df$middle_point = (df$next_time - df$time)/2 + df$time
-  df$pos_neg = ifelse((df$closeBid - df$openBid) >= 0, "A", "B")
-  if(x@type == "historical")
+  
+  if(x@type == "historical"){
+    #Add candlestick variables
+    df$next_time = c(df$time[-1], df$time[nrow(df)] + mean(diff(df$time)))
+    df$middle_point = (df$next_time - df$time)/2 + df$time
+    df$pos_neg = ifelse((df$closeBid - df$openBid) >= 0, "A", "B")
+    #Plot and return
     G = oanda_candle(df)
-  if(x@type == "inst_list")
+    plot(G)
+    return(G)
+  }  
+  if(x@type == "inst_list"){
+    
+  }
+    
 })
 
 #' @export
