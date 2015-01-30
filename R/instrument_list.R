@@ -31,6 +31,7 @@
 
 instrument_list <- function(token, accountId, fields = NULL, instruments = NULL, accountType = c("Trade", "Practice")){
   library("httr")
+  
   # Check arguments
   accountType <- match.arg(accountType)
   stopifnot(is.character(token), is.character(fields) | is.null(fields), is.character(instruments) | is.null(instruments))
@@ -40,20 +41,32 @@ instrument_list <- function(token, accountId, fields = NULL, instruments = NULL,
   not_allowed_fields <- fields %in% allowed_fields
   if(any(!not_allowed_fields))
     stop(paste0("The following fields are not valid: ", paste(fields[!not_allowed_fields], collapse = ", ")))
+ 
   # Create URL
   base_url <- ifelse(accountType == "Practice", "https://api-fxpractice.oanda.com/v1/instruments?", "https://api-fxtrade.oanda.com/v1/instruments?")
   url <- paste0(base_url, "accountId=", accountId)
   if(!is.null(instruments))
     url <- paste0(url, "&instruments=", paste(instruments, collapse = "%2C"))
   url <- paste0(url, "&fields=", paste(fields, collapse = "%2C"))
+  
   # Send Request
   get_request <- GET(url, add_headers(Authorization = paste0("Bearer ", token)))
   if(get_request$status_code != 200)
     stop(paste0("Request failed with code ", get_request$status_code," and error message:\n", content(get_request)$message))
-  # Format results
+ 
+  # Create dataframe
   results <- content(get_request)[[1]]
   results_df <- data.frame(matrix(unlist(results), ncol = length(results[[1]]), byrow = TRUE), 
                            stringsAsFactors = FALSE)
   colnames(results_df) <- names(results[[1]])
-  return(results_df)
+  
+  # Format df
+  numerical_vars = c("pip", "precision", "maxTradeUnits", "maxTrailingStop", "minTrailingStop", "marginRate")
+  for(i in intersect(numerical_vars, colnames(results_df)))
+    results_df[,i] = as.numeric(results_df[,i])
+  if("halted" %in% colnames(results_df))
+    results_df[,"halted"] = as.logical(results_df[,"halted"])
+  
+  results = new("oanda_result", url = url, type = "inst_list", result = results_df)
+  return(results)
 }

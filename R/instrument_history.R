@@ -47,7 +47,9 @@ instrument_history <- function(token, instrument,
                                includeFirst = TRUE, dailyAlignment = 21, alignmentTimezone = "America/New_York", 
                                weeklyAlignment = c("Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"), 
                                accountType = c("Trade", "Practice")){
+  
   library("httr")
+  
   # Check arguments
   granularity = match.arg(granularity)
   candleFormat = match.arg(candleFormat)
@@ -72,6 +74,7 @@ instrument_history <- function(token, instrument,
   if(!is.null(start) & !is.null(end))
     if(as.numeric(end - start) <= 0)
       stop("The end date should be bigger than the start date")
+  
   # Create URL
   base_url <- ifelse(accountType == "Practice", "https://api-fxpractice.oanda.com/v1/candles?", "https://api-fxtrade.oanda.com/v1/candles?")
   url <- paste0(base_url, "instrument=", instrument)
@@ -91,10 +94,19 @@ instrument_history <- function(token, instrument,
   get_request <- GET(url, add_headers(Authorization = paste0("Bearer ", token)))
   if(get_request$status_code != 200)
     stop(paste0("Request failed with code ", get_request$status_code," and error message:\n", content(get_request)$message))
-  # Format results
+  
+  # Create results df
   results <- content(get_request)[[3]]
   results_df <- data.frame(matrix(unlist(results), ncol = length(results[[1]]), byrow = TRUE), 
                            stringsAsFactors = FALSE)
   colnames(results_df) <- names(results[[1]])
-  return(results_df)
+  
+  # Format df
+  results_df$time = strptime(results_df$time, tz = "GMT", format("%Y-%m-%dT%H:%M:%S.000000Z"))
+  for(i in 2:10)
+    results_df[,i] = as.numeric(results_df[,i])
+  results_df$complete = as.logical(results_df$complete)
+  
+  results = new("oanda_result", url = url, type = "historical", result = results_df)
+  return(results)
 }

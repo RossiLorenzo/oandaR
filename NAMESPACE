@@ -3,3 +3,6 @@
 export(current_prices)
 export(instrument_history)
 export(instrument_list)
+export(plot)
+export(print)
+exportClasses(oanda_result)
